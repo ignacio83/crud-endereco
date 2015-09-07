@@ -5,16 +5,20 @@ Provê serviços REST para cadastro, alteração, remoção e consulta de endere
 Esse projeto utiliza spring-boot, spring-mvc, spring-data, spring-boot-actuator com banco de dados em memória (hsqldb).
 
 #Arquitetura
-Arquitera em 3 camadas (controller, service, repository).
+Arquitetura em 3 camadas (controller, service, repository).
 
 #Integrações
 Esse projeto depende do serviço REST de busca de CEP exposto pelo projeto [busca-cep](https://github.com/ignacio83/busca-cep).
+
+#Healthcheck
+http://localhost:8080/health
 
 #Como iniciar o projeto
 mvn spring-boot:run -Dserver.port=8080 -Dbusca.cep.url=http://localhost:8081
 
 Ajuste os parâmetros server.port e busca.cep.url para valores de sua preferência. Caso a URL do serviço de busca cep seja inválida, não será possível
-incluir ou alterar um endereço.
+incluir ou alterar um endereço. Verifique a saúde do serviço acessando http://localhost:8080/health, caso a comunicação com o serviço de CEP não seja possível
+o status final do serviço será DOWN.
 
 #Acessando a aplicação
 http://localhost:8080/

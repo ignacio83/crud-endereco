@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepClient;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
 import br.com.afi.web.rest.crud.endereco.integration.EnderecoTO;
+import br.com.afi.web.rest.crud.endereco.integration.HealthTO;
 
 /**
  * Implementação do client para o serviço REST de consulta de CEP.
@@ -20,6 +21,7 @@ import br.com.afi.web.rest.crud.endereco.integration.EnderecoTO;
 @Component
 public class BuscaCepClientImpl implements BuscaCepClient{
 	private static final String BUSCA_CEP_ENDPOINT = "/endereco/{cep}";
+	private static final String HEALTH_ENDPOINT = "/health";
 	private static final int STATUS_CODE_CEP_NOT_FOUND = 420;
 	private final Logger logger = LoggerFactory.getLogger(BuscaCepClientImpl.class);
 	
@@ -32,6 +34,12 @@ public class BuscaCepClientImpl implements BuscaCepClient{
 	 */
 	public BuscaCepClientImpl() {
 		this.rest = new RestTemplate();
+	}
+	
+	@Override
+	public HealthTO health(){
+		final String url = server + HEALTH_ENDPOINT;
+		return rest.getForObject(url, HealthTO.class);		
 	}
 
 	@Override
