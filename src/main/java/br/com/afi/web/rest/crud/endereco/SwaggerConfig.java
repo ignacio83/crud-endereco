@@ -41,7 +41,7 @@ public class SwaggerConfig {
                 ))
                 .useDefaultResponseMessages(false)
                 //Map the specific URL patterns into Swagger
-                .includePatterns("/usuario/endereco/.*");
+                .includePatterns("/usuario/endereco.*");
     }
     
 }

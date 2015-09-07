@@ -27,7 +27,7 @@ public class EnderecoUsuario implements Serializable {
 	@Column(scale=8)
 	private Integer id;
 	
-	@Column(length=9, nullable=false)
+	@Column(length=8, nullable=false)
 	private String cep;
 	
 	@Column(length=50,nullable=false)

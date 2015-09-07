@@ -1,4 +1,4 @@
-package br.com.afi.web.rest.crud.endereco.controller;
+package br.com.afi.web.rest.crud.endereco.to;
 
 import java.text.MessageFormat;
 
