@@ -10,9 +10,6 @@ Arquitetura em 3 camadas (controller, service, repository).
 #Integrações
 Esse projeto depende do serviço REST de busca de CEP exposto pelo projeto [busca-cep](https://github.com/ignacio83/busca-cep).
 
-#Healthcheck
-http://localhost:8080/health
-
 #Como iniciar o projeto
 mvn spring-boot:run -Dserver.port=8080 -Dbusca.cep.url=http://localhost:8081
 
@@ -22,6 +19,9 @@ o status final do serviço será DOWN.
 
 #Acessando a aplicação
 http://localhost:8080/
+
+#Healthcheck
+http://localhost:8080/health
 
 A página inicial da aplicação é uma documentação escrita em swagger, os serviços listados podem ser utilizados sem
 necessidade dessa interface HTML.
