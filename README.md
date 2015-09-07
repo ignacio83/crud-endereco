@@ -20,11 +20,11 @@ o status final do serviço será DOWN.
 #Acessando a aplicação
 http://localhost:8080/
 
-#Healthcheck
-http://localhost:8080/health
-
 A página inicial da aplicação é uma documentação escrita em swagger, os serviços listados podem ser utilizados sem
 necessidade dessa interface HTML.
+
+#Healthcheck
+http://localhost:8080/health
 
 #Usuários previamente cadastrados
 * Id: 1 - João da Silva
