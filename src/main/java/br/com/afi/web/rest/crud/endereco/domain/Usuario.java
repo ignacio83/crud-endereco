@@ -42,6 +42,17 @@ public class Usuario implements Serializable {
 	public Usuario(String nome) {
 		this.nome = nome;
 	}
+	
+	/**
+	 * Construtor.
+	 * 
+	 * @param id Id do usuário
+	 * @param nome Nome do usuário 
+	 */
+	public Usuario(Integer id, String nome) {
+		this.id = id;
+		this.nome = nome;
+	}
 
 	public Integer getId() {
 		return id;

@@ -60,7 +60,23 @@ public class EnderecoUsuario implements Serializable {
 	}
 	
 	/**
-	 * Instância um novo endereço para o usuário informado.
+	 * Instancia um novo endereço para o usuário informado.
+	 * 
+	 * @param id Id do endereço
+	 * @param usuario Usuário
+	 * @param cep CEP
+	 * @param logradouro Logradouro
+	 * @param numero Numero
+	 * @param cidade Cidade
+	 * @param uf Unidade Federal 
+	 */
+	public EnderecoUsuario(Integer id, Usuario usuario, String cep, String logradouro, String numero, String cidade, String uf) {
+		this(usuario,cep,logradouro,numero,cidade,uf);
+		this.id = id;
+	}
+	
+	/**
+	 * Instancia um novo endereço para o usuário informado.
 	 * 
 	 * @param usuario Usuário
 	 * @param cep CEP
@@ -79,7 +95,7 @@ public class EnderecoUsuario implements Serializable {
 	}
 	
 	/**
-	 * Instância um novo endereço para o usuário informado.
+	 * Instancia um novo endereço para o usuário informado.
 	 * 
 	 * @param usuario Usuário
 	 * @param cep CEP
@@ -111,6 +127,10 @@ public class EnderecoUsuario implements Serializable {
 		this.complemento = complemento;
 	}
 	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public String getBairro() {
 		return bairro;
 	}
@@ -152,6 +172,30 @@ public class EnderecoUsuario implements Serializable {
 
 	public Usuario getUsuario() {
 		return usuario;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	public void setLogradouro(String logradouro) {
+		this.logradouro = logradouro;
+	}
+
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	@Override

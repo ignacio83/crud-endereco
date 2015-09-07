@@ -33,7 +33,7 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 
 	@Override
 	@Transactional
-	public void removeEndereco(Integer id) throws EnderecoUsuarioNotFoundException {
+	public void remove(Integer id) throws EnderecoUsuarioNotFoundException {
 		final EnderecoUsuario endereco = enderecoUsuarioRepository.findOne(id);
 		if(endereco==null){
 			throw new EnderecoUsuarioNotFoundException(id);
@@ -43,6 +43,7 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 	}
 
 	@Override
+	@Transactional
 	public EnderecoUsuario inclui(IncluiEnderecoUsuarioTO to) throws UsuarioNotFoundException {
 		EnderecoUsuario enderecoUsuario = to.toEnderecoUsuario(usuarioRepository);		
 		enderecoUsuario = enderecoUsuarioRepository.save(enderecoUsuario);
@@ -52,6 +53,7 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 	}
 
 	@Override
+	@Transactional
 	public EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws UsuarioNotFoundException, EnderecoUsuarioNotFoundException {
 		EnderecoUsuario enderecoUsuario = to.toEnderecoUsuario(id, enderecoUsuarioRepository, usuarioRepository);		
 		enderecoUsuario = enderecoUsuarioRepository.save(enderecoUsuario);
@@ -59,4 +61,12 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 		logger.debug("Endereço {} alterado", enderecoUsuario.getId());
 		return enderecoUsuario;
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public EnderecoUsuario consulta(Integer id) {
+		 return enderecoUsuarioRepository.findOne(id);
+	}
+	
+	
 }

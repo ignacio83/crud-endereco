@@ -2,6 +2,7 @@ package br.com.afi.web.rest.crud.endereco.to;
 
 import java.text.MessageFormat;
 
+import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.domain.Usuario;
 
@@ -18,7 +19,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description="Endereço de um usuário")
 @JsonInclude(Include.NON_NULL)
-public class EnderecoUsuarioTO {
+public class EnderecoUsuarioTO implements TransferObject{
 
 	@ApiModelProperty(value="Id do endereço")
 	private final Integer id;

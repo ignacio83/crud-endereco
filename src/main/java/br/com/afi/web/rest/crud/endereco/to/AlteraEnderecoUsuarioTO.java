@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.domain.Usuario;
 import br.com.afi.web.rest.crud.endereco.repository.EnderecoUsuarioRepository;
@@ -27,7 +28,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description="Endereço de um usuário")
 @JsonInclude(Include.NON_NULL)
-public class AlteraEnderecoUsuarioTO {
+public class AlteraEnderecoUsuarioTO implements TransferObject{
 	
 	@ApiModelProperty(value="CEP")
 	@NotEmpty
@@ -150,7 +151,16 @@ public class AlteraEnderecoUsuarioTO {
 		if(usuario==null){
 			throw new UsuarioNotFoundException(usuarioId);
 		}
-		return new EnderecoUsuario(usuario, cep, rua, numero, complemento, bairro, cidade, estado);
+		
+		enderecoUsuario.setCep(cep);
+		enderecoUsuario.setLogradouro(rua);
+		enderecoUsuario.setNumero(numero);
+		enderecoUsuario.setComplemento(complemento);
+		enderecoUsuario.setBairro(bairro);
+		enderecoUsuario.setCidade(cidade);
+		enderecoUsuario.setUf(estado);
+		
+		return enderecoUsuario;
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public interface EnderecoUsuarioService {
 	 * @param id Id do endereço
 	 * @throws EnderecoUsuarioNotFoundException Caso o endereço não seja encontrado.
 	 */
-	void removeEndereco(Integer id) throws EnderecoUsuarioNotFoundException;
+	void remove(Integer id) throws EnderecoUsuarioNotFoundException;
 	
 	/**
 	 * Inclui o endereço informado.
@@ -40,4 +40,12 @@ public interface EnderecoUsuarioService {
 	 * @throws UsuarioNotFoundException Caso o usuário informado não exista.
 	 */
 	EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException;
+	
+	/**
+	 * Consulta o endereço através do Id.
+	 * 
+	 * @param id Id do endereço
+	 * @return Endereço, ou null caso nenhum endereço seja encontrado
+	 */
+	EnderecoUsuario consulta(Integer id);
 }

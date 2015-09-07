@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
-import br.com.afi.web.rest.crud.endereco.repository.EnderecoUsuarioRepository;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioService;
 import br.com.afi.web.rest.crud.endereco.service.UsuarioNotFoundException;
@@ -40,9 +39,6 @@ public class EnderecoUsuarioController {
 	@Autowired
 	private EnderecoUsuarioService enderecoUsuarioService;
 	
-	@Autowired
-	private EnderecoUsuarioRepository enderecoUsuarioRepository;
-	
 	/**
 	 * Obtém o endereço do usuário através do Id.
 	 * 
@@ -62,7 +58,7 @@ public class EnderecoUsuarioController {
     		@ApiParam(value="Id do endereço", required=true) 
     		@PathVariable("id") Integer id) {
 
-        final EnderecoUsuario enderecoUsuario = enderecoUsuarioRepository.findOne(id);
+        final EnderecoUsuario enderecoUsuario = enderecoUsuarioService.consulta(id);
 		return enderecoUsuario!=null ? new EnderecoUsuarioTO(enderecoUsuario) : null;
     }
 	
@@ -87,7 +83,7 @@ public class EnderecoUsuarioController {
     		@ApiParam(value="Id do endereço", required=true) 
     		@PathVariable("id") Integer id) throws EnderecoUsuarioNotFoundException {
 
-		enderecoUsuarioService.removeEndereco(id);
+		enderecoUsuarioService.remove(id);
     }
 	
 	/**
