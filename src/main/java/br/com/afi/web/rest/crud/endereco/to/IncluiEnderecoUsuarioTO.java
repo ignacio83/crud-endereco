@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.domain.Usuario;
 import br.com.afi.web.rest.crud.endereco.repository.UsuarioRepository;

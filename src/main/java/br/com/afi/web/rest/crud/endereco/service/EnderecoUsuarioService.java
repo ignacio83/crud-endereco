@@ -1,6 +1,7 @@
 package br.com.afi.web.rest.crud.endereco.service;
 
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
+import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
 import br.com.afi.web.rest.crud.endereco.to.AlteraEnderecoUsuarioTO;
 import br.com.afi.web.rest.crud.endereco.to.IncluiEnderecoUsuarioTO;
 
@@ -27,8 +28,10 @@ public interface EnderecoUsuarioService {
 	 * @param to Dados do endereço
 	 * @return Endereço incluído
 	 * @throws UsuarioNotFoundException Caso o usuário informado não exista.
+	 * @throws InvalidCepException Caso o CEP não seja válido
+	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço de consulta de CEP
 	 */
-	EnderecoUsuario inclui(IncluiEnderecoUsuarioTO to) throws UsuarioNotFoundException;
+	EnderecoUsuario inclui(IncluiEnderecoUsuarioTO to) throws UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException;
 	
 	/**
 	 * Altera o endereço informado.
@@ -38,8 +41,10 @@ public interface EnderecoUsuarioService {
 	 * @return Endereço alterado
 	 * @throws EnderecoUsuarioNotFoundException Caso o id não seja de um endereço existente
 	 * @throws UsuarioNotFoundException Caso o usuário informado não exista.
+	 * @throws InvalidCepException Caso o CEP não seja válido
+	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço de consulta de CEP
 	 */
-	EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException;
+	EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException;
 	
 	/**
 	 * Consulta o endereço através do Id.

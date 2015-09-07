@@ -18,6 +18,9 @@ import org.mockito.stubbing.Answer;
 
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.domain.Usuario;
+import br.com.afi.web.rest.crud.endereco.integration.BuscaCepClient;
+import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
+import br.com.afi.web.rest.crud.endereco.integration.EnderecoTO;
 import br.com.afi.web.rest.crud.endereco.repository.EnderecoUsuarioRepository;
 import br.com.afi.web.rest.crud.endereco.repository.UsuarioRepository;
 import br.com.afi.web.rest.crud.endereco.service.impl.EnderecoUsuarioServiceImpl;
@@ -32,8 +35,8 @@ import br.com.afi.web.rest.crud.endereco.to.IncluiEnderecoUsuarioTO;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class EnderecoUsuarioServiceTest {
-	private final static String CEP_VALIDO = "01001123";
-	private final static String CEP_VALIDO_2 = "01001124";
+	private static final String CEP_1 = "01001123";
+	private static final String CEP_2 = "01001124";
 	private static final int USUARIO_ID = 1;
 	private final Integer ENDERECO_ID = 1;
 	private final Integer NOVO_ENDERECO_ID = 2;
@@ -49,6 +52,9 @@ public class EnderecoUsuarioServiceTest {
 	@Mock
 	private UsuarioRepository usuarioRepository;
 	
+	@Mock
+	private BuscaCepClient buscaCepClient;
+	
 	@InjectMocks
 	private EnderecoUsuarioService enderecoUsuarioService = new EnderecoUsuarioServiceImpl();
 	
@@ -58,6 +64,7 @@ public class EnderecoUsuarioServiceTest {
 		usuario = null;
 		Mockito.reset(enderecoUsuarioRepository);
 		Mockito.reset(usuarioRepository);
+		Mockito.reset(buscaCepClient);
 		
 		when(enderecoUsuarioRepository.save(any(EnderecoUsuario.class))).thenAnswer(new Answer<EnderecoUsuario>() {
 
@@ -79,9 +86,9 @@ public class EnderecoUsuarioServiceTest {
 	@Test
 	public void testConsulta(){
 		dado.umUsuarioCadastrado();
-		dado.umEnderecoCadastrado();
-		quando.consultaPeloId();
-		entao.deveRetornarOEnderecoCorrespondente();
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		quando.consultaPeloId(ENDERECO_ID);
+		entao.deveRetornarOEnderecoCorrespondente(ENDERECO_ID);
 	}
 	
 	/**
@@ -93,8 +100,8 @@ public class EnderecoUsuarioServiceTest {
 	@Test
 	public void testRemocao() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
 		dado.umUsuarioCadastrado();
-		dado.umEnderecoCadastrado();
-		quando.removeOEndereco();
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		quando.removeOEndereco(ENDERECO_ID);
 		entao.deveSerRemovidoDoBancoDeDados();
 	}
 	
@@ -106,7 +113,7 @@ public class EnderecoUsuarioServiceTest {
 	 */
 	@Test(expected=EnderecoUsuarioNotFoundException.class)
 	public void testRemocaoEnderecoNaoCadastrado() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
-		quando.removeOEndereco();
+		quando.removeOEndereco(ENDERECO_ID);
 	}
 	
 	/**
@@ -114,13 +121,31 @@ public class EnderecoUsuarioServiceTest {
 	 * 
 	 * @throws UsuarioNotFoundException 
 	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
 	 */
 	@Test
-	public void testAlteracao() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+	public void testAlteracao() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
 		dado.umUsuarioCadastrado();
-		dado.umEnderecoCadastrado();
-		quando.alteraOEndereco();
-		entao.deveSerAlteradoNoBancoDeDados();
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		dado.cepExistente(CEP_2);
+		quando.alteraOEndereco(ENDERECO_ID,CEP_2);
+		entao.deveSerAlteradoNoBancoDeDados(ENDERECO_ID);
+	}
+	
+	/**
+	 * Ao alterar o endereço para um CEP que não existe, uma exceção deve ser lançada.
+	 * 
+	 * @throws UsuarioNotFoundException 
+	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
+	 */
+	@Test(expected=InvalidCepException.class)
+	public void testAlteracaoCepInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
+		dado.umUsuarioCadastrado();
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		quando.alteraOEndereco(ENDERECO_ID,CEP_2);
 	}
 	
 	/**
@@ -128,11 +153,14 @@ public class EnderecoUsuarioServiceTest {
 	 * 
 	 * @throws UsuarioNotFoundException 
 	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
 	 */
 	@Test(expected=UsuarioNotFoundException.class)
-	public void testAlteracaoUsuarioInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
-		dado.umEnderecoCadastrado();
-		quando.alteraOEnderecoParaUmUsuarioInexistente();
+	public void testAlteracaoUsuarioInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
+		dado.cepExistente(CEP_2);
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		quando.alteraOEnderecoParaUmUsuarioInexistente(ENDERECO_ID,CEP_2);
 	}
 	
 	/**
@@ -140,10 +168,13 @@ public class EnderecoUsuarioServiceTest {
 	 * 
 	 * @throws UsuarioNotFoundException 
 	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
 	 */
 	@Test(expected=EnderecoUsuarioNotFoundException.class)
-	public void testAlteracaoEnderecoInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
-		quando.alteraOEndereco();
+	public void testAlteracaoEnderecoInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
+		dado.cepExistente(CEP_2);
+		quando.alteraOEndereco(ENDERECO_ID,CEP_2);
 	}
 	
 	/**
@@ -151,11 +182,14 @@ public class EnderecoUsuarioServiceTest {
 	 * 
 	 * @throws UsuarioNotFoundException 
 	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
 	 */
 	@Test
-	public void testInclusao() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+	public void testInclusao() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
 		dado.umUsuarioCadastrado();
-		quando.incluiUmEndereco();
+		dado.cepExistente(CEP_1);
+		quando.incluiUmEndereco(CEP_1);
 		entao.deveSerInseridoNoBancoDeDados();
 	}
 	
@@ -164,16 +198,33 @@ public class EnderecoUsuarioServiceTest {
 	 * 
 	 * @throws UsuarioNotFoundException 
 	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
 	 */
 	@Test(expected=UsuarioNotFoundException.class)
-	public void testInclusaoUsuarioInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
-		dado.umEnderecoCadastrado();
-		quando.incluiUmEndereco();
+	public void testInclusaoUsuarioInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
+		dado.umEnderecoCadastrado(ENDERECO_ID,CEP_1);
+		dado.cepExistente(CEP_1);
+		quando.incluiUmEndereco(CEP_1);
+	}
+	
+	/**
+	 * Ao incluir o endereço para um CEP que não existe, uma exceção deve ser lançada.
+	 * 
+	 * @throws UsuarioNotFoundException 
+	 * @throws EnderecoUsuarioNotFoundException 
+	 * @throws InvalidCepException 
+	 * @throws BuscaCepIntegrationException 
+	 */
+	@Test(expected=InvalidCepException.class)
+	public void testInclusaoCepInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
+		dado.umUsuarioCadastrado();
+		quando.incluiUmEndereco(CEP_1);
 	}
 	
 	private class Dado{				
-		public Dado umEnderecoCadastrado() {
-			final EnderecoUsuario e = new EnderecoUsuario(ENDERECO_ID,usuario,CEP_VALIDO, "qualquer", "qualquer", "São Paulo", "SP");
+		public Dado umEnderecoCadastrado(Integer id, String cep) {
+			final EnderecoUsuario e = new EnderecoUsuario(id,usuario,cep, "qualquer", "qualquer", "São Paulo", "SP");
 			when(enderecoUsuarioRepository.findOne(eq(e.getId()))).thenReturn(e);
 			return this;
 		}
@@ -183,62 +234,70 @@ public class EnderecoUsuarioServiceTest {
 			when(usuarioRepository.findOne(eq(usuario.getId()))).thenReturn(usuario);
 			return this;
 		}
+		
+		public Dado cepExistente(String cep) throws BuscaCepIntegrationException{
+			final EnderecoTO to = new EnderecoTO();
+			to.setCep(cep);
+			when(buscaCepClient.consultaCep(cep)).thenReturn(to);
+			return this;
+		}
 	}
 	
 	private class Quando{
-		public Quando consultaPeloId() {
-			enderecoUsuario = enderecoUsuarioService.consulta(ENDERECO_ID);
+		public Quando consultaPeloId(Integer id) {
+			enderecoUsuario = enderecoUsuarioService.consulta(id);
 			return this;
 		}
 		
-		public Quando incluiUmEndereco() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+		public Quando incluiUmEndereco(String cep) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
 			final IncluiEnderecoUsuarioTO to = new IncluiEnderecoUsuarioTO();
 			to.setUsuarioId(USUARIO_ID);
 			to.setCidade("São Paulo");
 			to.setBairro("qualquer");
 			to.setRua("qualquer");
-			to.setCep(CEP_VALIDO);
+			to.setCep(cep);
 			
 			enderecoUsuario = enderecoUsuarioService.inclui(to);
 			return this;
 		}
 		
-		public Quando alteraOEndereco() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+		public Quando alteraOEndereco(Integer id, String novoCep) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
 			final AlteraEnderecoUsuarioTO to = new AlteraEnderecoUsuarioTO();
 			to.setUsuarioId(USUARIO_ID);
 			to.setCidade("São Paulo");
 			to.setBairro("qualquer");
 			to.setRua("qualquer");
-			to.setCep(CEP_VALIDO_2);
+			to.setCep(novoCep);
 			
-			enderecoUsuario = enderecoUsuarioService.altera(ENDERECO_ID, to);
+			enderecoUsuario = enderecoUsuarioService.altera(id, to);
 			return this;
 		}
 		
-		public Quando removeOEndereco() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
-			enderecoUsuarioService.remove(ENDERECO_ID);
+		public Quando removeOEndereco(Integer id) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+			enderecoUsuarioService.remove(id);
 			return this;
 		}
 		
-		public Quando alteraOEnderecoParaUmUsuarioInexistente() throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException{
+		public Quando alteraOEnderecoParaUmUsuarioInexistente(Integer id, String cep) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException{
 			final AlteraEnderecoUsuarioTO to = new AlteraEnderecoUsuarioTO();
 			to.setUsuarioId(2);
-			enderecoUsuario = enderecoUsuarioService.altera(ENDERECO_ID, to);
+			to.setCep(cep);
+			enderecoUsuario = enderecoUsuarioService.altera(id, to);
 			return this;
 		}
 	}
 	
 	private class Entao {
-		public Entao deveRetornarOEnderecoCorrespondente(){
+		public Entao deveRetornarOEnderecoCorrespondente(Integer id){
 			Assert.assertNotNull("Endereço não encontrado",enderecoUsuario);
-			Assert.assertEquals("Endereço incorreto encontrado",ENDERECO_ID, enderecoUsuario.getId());
+			Assert.assertEquals("Endereço incorreto encontrado",id, enderecoUsuario.getId());
 			return this;
 		}
 		
-		public Entao deveSerAlteradoNoBancoDeDados(){			
+		public Entao deveSerAlteradoNoBancoDeDados(Integer id){			
 			Assert.assertNotNull("Endereço não alterado",enderecoUsuario);
-			Assert.assertEquals("Endereço incorreto alterado",ENDERECO_ID, enderecoUsuario.getId());
-			Assert.assertEquals("Endereço incorreto alterado",CEP_VALIDO_2, enderecoUsuario.getCep());
+			Assert.assertEquals("Endereço incorreto alterado",id, enderecoUsuario.getId());
+			Assert.assertEquals("Endereço incorreto alterado",CEP_2, enderecoUsuario.getCep());
 			
 			verify(enderecoUsuarioRepository).save(any(EnderecoUsuario.class));
 			
@@ -247,7 +306,7 @@ public class EnderecoUsuarioServiceTest {
 		
 		public Entao deveSerInseridoNoBancoDeDados(){			
 			Assert.assertNotNull("Endereço não incluído",enderecoUsuario);
-			Assert.assertEquals("Endereço incorreto alterado",NOVO_ENDERECO_ID, enderecoUsuario.getId());
+			Assert.assertEquals("Endereço inserido com id incorreto",NOVO_ENDERECO_ID, enderecoUsuario.getId());
 			
 			verify(enderecoUsuarioRepository).save(any(EnderecoUsuario.class));
 			

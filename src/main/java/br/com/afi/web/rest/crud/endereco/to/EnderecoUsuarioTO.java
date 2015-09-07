@@ -2,7 +2,6 @@ package br.com.afi.web.rest.crud.endereco.to;
 
 import java.text.MessageFormat;
 
-import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.domain.Usuario;
 

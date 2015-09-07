@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
-
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioNotFoundException;
+import br.com.afi.web.rest.crud.endereco.service.InvalidCepException;
 import br.com.afi.web.rest.crud.endereco.service.UsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.to.ValidationErrorTO;
 
@@ -25,8 +27,10 @@ import br.com.afi.web.rest.crud.endereco.to.ValidationErrorTO;
 @ControllerAdvice
 public class ExceptionResolver {
 	public static final int STATUS_CODE_VALIDATION_ERROR = 400;
-	public static final int STATUS_CODE_USUARIO_NOT_FOUND = 420;
-	public static final int STATUS_CODE_ENDERECO_NOT_FOUND = 421;
+	public static final int STATUS_CODE_INVALID_CEP = 420;
+	public static final int STATUS_CODE_INTEGRATION_FAILED = 425;
+	public static final int STATUS_CODE_USUARIO_NOT_FOUND = 430;
+	public static final int STATUS_CODE_ENDERECO_NOT_FOUND = 431;
 
 	@ExceptionHandler(EnderecoUsuarioNotFoundException.class)
     public void enderecoUsuarioNotFoundExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
@@ -36,12 +40,24 @@ public class ExceptionResolver {
 	
 	@ExceptionHandler(UsuarioNotFoundException.class)
     public void usuarioNotFoundExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
-        response.setStatus(STATUS_CODE_ENDERECO_NOT_FOUND);   
+        response.setStatus(STATUS_CODE_USUARIO_NOT_FOUND);   
         IOUtils.write(exception.getMessage(), response.getOutputStream());
     }
 	
+	@ExceptionHandler(InvalidCepException.class)
+    public void invalidCepExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
+        response.setStatus(STATUS_CODE_INVALID_CEP);
+        IOUtils.write(exception.getMessage(), response.getOutputStream());
+    }
+	
+	@ExceptionHandler(BuscaCepIntegrationException.class)
+	public void test(BuscaCepIntegrationException exception, HttpServletResponse response) throws IOException{
+		response.setStatus(STATUS_CODE_INTEGRATION_FAILED);
+		IOUtils.write(exception.getMessage(), response.getOutputStream());
+	}
+	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public @ResponseBody ResponseEntity<ValidationErrorTO> test(MethodArgumentNotValidException exception) throws IOException{		
+	public @ResponseBody ResponseEntity<ValidationErrorTO> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) throws IOException{		
 		final ValidationErrorTO validationErrorTO = new ValidationErrorTO(exception);
 		return new ResponseEntity<ValidationErrorTO>(validationErrorTO, HttpStatus.BAD_REQUEST);
 	}

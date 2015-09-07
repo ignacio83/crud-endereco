@@ -1,4 +1,4 @@
-package br.com.afi.web.rest.crud.endereco.controller;
+package br.com.afi.web.rest.crud.endereco.to;
 
 /**
  * Indica se a classe é um Transfer Object.

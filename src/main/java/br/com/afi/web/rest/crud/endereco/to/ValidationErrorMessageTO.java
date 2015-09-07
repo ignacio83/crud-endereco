@@ -2,8 +2,6 @@ package br.com.afi.web.rest.crud.endereco.to;
 
 import org.springframework.validation.FieldError;
 
-import br.com.afi.web.rest.crud.endereco.controller.TransferObject;
-
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
