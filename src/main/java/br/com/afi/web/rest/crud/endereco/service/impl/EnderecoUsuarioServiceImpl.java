@@ -10,9 +10,10 @@ import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepClient;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
 import br.com.afi.web.rest.crud.endereco.integration.EnderecoTO;
+import br.com.afi.web.rest.crud.endereco.integration.InvalidCepException;
 import br.com.afi.web.rest.crud.endereco.repository.EnderecoUsuarioRepository;
 import br.com.afi.web.rest.crud.endereco.repository.UsuarioRepository;
-import br.com.afi.web.rest.crud.endereco.service.InvalidCepException;
+import br.com.afi.web.rest.crud.endereco.service.CepNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioService;
 import br.com.afi.web.rest.crud.endereco.service.UsuarioNotFoundException;
@@ -51,7 +52,7 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 
 	@Override
 	@Transactional
-	public EnderecoUsuario inclui(IncluiEnderecoUsuarioTO to) throws UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException {
+	public EnderecoUsuario inclui(IncluiEnderecoUsuarioTO to) throws UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException, CepNotFoundException {
 		final String cep = to.getCep();
 		validarCep(cep);
 		
@@ -64,7 +65,7 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 
 	@Override
 	@Transactional
-	public EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws UsuarioNotFoundException, EnderecoUsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException {
+	public EnderecoUsuario altera(Integer id, AlteraEnderecoUsuarioTO to) throws UsuarioNotFoundException, EnderecoUsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException, CepNotFoundException {
 		final String cep = to.getCep();
 		validarCep(cep);
 		
@@ -81,11 +82,12 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 	 * @param cep CEP
 	 * @throws InvalidCepException Caso o CEP seja inválido
 	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço de consulta de CEP
+	 * @throws CepNotFoundException Caso o CEP não seja encontrado
 	 */
-	private void validarCep(final String cep) throws InvalidCepException, BuscaCepIntegrationException {
+	private void validarCep(final String cep) throws InvalidCepException, BuscaCepIntegrationException, CepNotFoundException {
 		final EnderecoTO endereco = buscaCepClient.consultaCep(cep);
 		if(endereco==null){
-			throw new InvalidCepException(cep);
+			throw new CepNotFoundException(cep);
 		}
 	}
 
@@ -94,6 +96,4 @@ public class EnderecoUsuarioServiceImpl implements EnderecoUsuarioService {
 	public EnderecoUsuario consulta(Integer id) {
 		 return enderecoUsuarioRepository.findOne(id);
 	}
-	
-	
 }

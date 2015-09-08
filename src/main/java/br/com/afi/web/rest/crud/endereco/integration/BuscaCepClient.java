@@ -1,6 +1,7 @@
 package br.com.afi.web.rest.crud.endereco.integration;
 
 
+
 /**
  * Client para o serviço REST de consulta de CEP.
  * 
@@ -15,8 +16,9 @@ public interface BuscaCepClient {
 	 * @param cep CEP
 	 * @return Endereço
 	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço
+	 * @throws InvalidCepException Caso o CEP não seja válido
 	 */
-	EnderecoTO consultaCep(String cep) throws BuscaCepIntegrationException;
+	EnderecoTO consultaCep(String cep) throws BuscaCepIntegrationException, InvalidCepException;
 
 	/**
 	 * Verifica se o serviço está no ar.

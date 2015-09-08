@@ -11,6 +11,7 @@ import br.com.afi.web.rest.crud.endereco.integration.BuscaCepClient;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
 import br.com.afi.web.rest.crud.endereco.integration.EnderecoTO;
 import br.com.afi.web.rest.crud.endereco.integration.HealthTO;
+import br.com.afi.web.rest.crud.endereco.integration.InvalidCepException;
 
 /**
  * Implementação do client para o serviço REST de consulta de CEP.
@@ -33,7 +34,7 @@ public class BuscaCepClientImpl implements BuscaCepClient{
 	 * Construtor.
 	 */
 	public BuscaCepClientImpl() {
-		this.rest = new RestTemplate();
+		rest = new RestTemplate();
 	}
 	
 	@Override
@@ -43,7 +44,7 @@ public class BuscaCepClientImpl implements BuscaCepClient{
 	}
 
 	@Override
-	public EnderecoTO consultaCep(String cep) throws BuscaCepIntegrationException {
+	public EnderecoTO consultaCep(String cep) throws BuscaCepIntegrationException, InvalidCepException {
 		final String url = server + BUSCA_CEP_ENDPOINT;
 		EnderecoTO enderecoTO = null;
 		try{
@@ -51,7 +52,10 @@ public class BuscaCepClientImpl implements BuscaCepClient{
 			enderecoTO = rest.getForObject(url, EnderecoTO.class, cep);
 		}
 		catch(HttpClientErrorException e){
-			if(e.getStatusCode().value()!=STATUS_CODE_CEP_NOT_FOUND){
+			if(e.getStatusCode().value()==STATUS_CODE_CEP_NOT_FOUND){
+				throw new InvalidCepException(e.getResponseBodyAsString(), cep);
+			}
+			else{
 				throw new BuscaCepIntegrationException(url, e);
 			}
 		}

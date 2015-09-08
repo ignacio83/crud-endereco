@@ -1,4 +1,4 @@
-package br.com.afi.web.rest.crud.endereco.service;
+package br.com.afi.web.rest.crud.endereco.integration;
 
 /**
  * Exceção para casos em que o CEP não é encontrado.
@@ -18,6 +18,17 @@ public class InvalidCepException extends Exception{
 	 */
 	public InvalidCepException(String cep){
 		super(MESSAGE);
+		this.cep = cep;
+	}
+	
+	/**
+	 * Construtor.
+	 * 
+	 * @param message Mensagem
+	 * @param cep CEP que não foi encontrado
+	 */
+	public InvalidCepException(String message,String cep){
+		super(message);
 		this.cep = cep;
 	}
 

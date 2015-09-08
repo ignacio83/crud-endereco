@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.afi.web.rest.crud.endereco.domain.EnderecoUsuario;
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
+import br.com.afi.web.rest.crud.endereco.integration.InvalidCepException;
+import br.com.afi.web.rest.crud.endereco.service.CepNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioService;
-import br.com.afi.web.rest.crud.endereco.service.InvalidCepException;
 import br.com.afi.web.rest.crud.endereco.service.UsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.to.AlteraEnderecoUsuarioTO;
 import br.com.afi.web.rest.crud.endereco.to.EnderecoUsuarioTO;
@@ -95,6 +96,7 @@ public class EnderecoUsuarioController {
 	 * @throws EnderecoUsuarioNotFoundException Caso o id informado para o endereço não exista
 	 * @throws InvalidCepException Caso o CEP seja inválido
 	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço de consulta de CEP
+	 * @throws CepNotFoundException Caso o CEP não seja encontrado
 	 */
 	@RequestMapping(value="/usuario/endereco/{id}", method=RequestMethod.PUT,
 	        produces = MediaType.APPLICATION_JSON_VALUE,
@@ -105,7 +107,8 @@ public class EnderecoUsuarioController {
 			@ApiResponse(code = 200, message = "Endereço alterado com sucesso"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_VALIDATION_ERROR, response=ValidationErrorTO.class, message = "Os dados informados não são válidos"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_ENDERECO_NOT_FOUND, message = "Endereço não encontrado"),
-			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INVALID_CEP, message = "CEP não encontrado"),
+			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INVALID_CEP, message = "CEP inválido"),
+			@ApiResponse(code = ExceptionResolver.STATUS_CODE_CEP_NOT_FOUND, message = "CEP não encontrado"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_USUARIO_NOT_FOUND, message = "Usuário não encontrado"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INTEGRATION_FAILED, message = "Falha de comunicação com o serviço de consulta de CEP")
 	})
@@ -113,7 +116,7 @@ public class EnderecoUsuarioController {
     public @ResponseBody EnderecoUsuarioTO altera(
     		@ApiParam(value="Id do endereço", required=true) 
     		@PathVariable("id") Integer id,
-    		@RequestBody AlteraEnderecoUsuarioTO enderecoUsuario) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException {
+    		@RequestBody AlteraEnderecoUsuarioTO enderecoUsuario) throws EnderecoUsuarioNotFoundException, UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException, CepNotFoundException {
 
 		final EnderecoUsuario enderecoAlterado = enderecoUsuarioService.altera(id, enderecoUsuario);
 		return new EnderecoUsuarioTO(enderecoAlterado);
@@ -127,6 +130,7 @@ public class EnderecoUsuarioController {
 	 * @throws UsuarioNotFoundException Caso o usuário não exista 
 	 * @throws InvalidCepException Caso o CEP seja inválido
 	 * @throws BuscaCepIntegrationException Caso não seja possível se comunicar com o serviço de consulta de CEP
+	 * @throws CepNotFoundException Caso o CEP não seja encontrado
 	 */
 	@RequestMapping(value="/usuario/endereco", method=RequestMethod.POST,
 	        produces = MediaType.APPLICATION_JSON_VALUE,
@@ -136,13 +140,14 @@ public class EnderecoUsuarioController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Endereço incluído com sucesso"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_VALIDATION_ERROR, response=ValidationErrorTO.class, message = "Os dados informados não são válidos"),
-			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INVALID_CEP, message = "CEP não encontrado"),
+			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INVALID_CEP, message = "CEP inválido"),
+			@ApiResponse(code = ExceptionResolver.STATUS_CODE_CEP_NOT_FOUND, message = "CEP não encontrado"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_USUARIO_NOT_FOUND, message = "Usuário não encontrado"),
 			@ApiResponse(code = ExceptionResolver.STATUS_CODE_INTEGRATION_FAILED, message = "Falha de comunicação com o serviço de consulta de CEP")
 	})
 	@Transactional
     public @ResponseBody EnderecoUsuarioTO inclui( 
-    		@RequestBody @Valid IncluiEnderecoUsuarioTO enderecoUsuario) throws UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException {
+    		@RequestBody @Valid IncluiEnderecoUsuarioTO enderecoUsuario) throws UsuarioNotFoundException, InvalidCepException, BuscaCepIntegrationException, CepNotFoundException {
 
 		final EnderecoUsuario enderecoIncluido = enderecoUsuarioService.inclui(enderecoUsuario);
 		return new EnderecoUsuarioTO(enderecoIncluido);

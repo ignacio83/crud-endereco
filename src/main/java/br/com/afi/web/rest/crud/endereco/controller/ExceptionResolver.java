@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.afi.web.rest.crud.endereco.integration.BuscaCepIntegrationException;
+import br.com.afi.web.rest.crud.endereco.integration.InvalidCepException;
+import br.com.afi.web.rest.crud.endereco.service.CepNotFoundException;
 import br.com.afi.web.rest.crud.endereco.service.EnderecoUsuarioNotFoundException;
-import br.com.afi.web.rest.crud.endereco.service.InvalidCepException;
 import br.com.afi.web.rest.crud.endereco.service.UsuarioNotFoundException;
 import br.com.afi.web.rest.crud.endereco.to.ValidationErrorTO;
 
@@ -31,6 +32,7 @@ public class ExceptionResolver {
 	public static final int STATUS_CODE_INTEGRATION_FAILED = 425;
 	public static final int STATUS_CODE_USUARIO_NOT_FOUND = 430;
 	public static final int STATUS_CODE_ENDERECO_NOT_FOUND = 431;
+	public static final int STATUS_CODE_CEP_NOT_FOUND = 432;
 
 	@ExceptionHandler(EnderecoUsuarioNotFoundException.class)
     public void enderecoUsuarioNotFoundExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
@@ -47,6 +49,12 @@ public class ExceptionResolver {
 	@ExceptionHandler(InvalidCepException.class)
     public void invalidCepExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
         response.setStatus(STATUS_CODE_INVALID_CEP);
+        IOUtils.write(exception.getMessage(), response.getOutputStream());
+    }
+	
+	@ExceptionHandler(CepNotFoundException.class)
+    public void cepNotFoundExceptionHandler(Exception exception, HttpServletResponse response) throws IOException {
+        response.setStatus(STATUS_CODE_CEP_NOT_FOUND);
         IOUtils.write(exception.getMessage(), response.getOutputStream());
     }
 	
