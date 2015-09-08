@@ -29,7 +29,7 @@ import br.com.afi.web.rest.crud.endereco.to.ValidationErrorTO;
 public class ExceptionResolver {
 	public static final int STATUS_CODE_VALIDATION_ERROR = 400;
 	public static final int STATUS_CODE_INVALID_CEP = 420;
-	public static final int STATUS_CODE_INTEGRATION_FAILED = 425;
+	public static final int STATUS_CODE_INTEGRATION_FAILED = 510;
 	public static final int STATUS_CODE_USUARIO_NOT_FOUND = 430;
 	public static final int STATUS_CODE_ENDERECO_NOT_FOUND = 431;
 	public static final int STATUS_CODE_CEP_NOT_FOUND = 432;
